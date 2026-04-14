@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Citrus Valley Gastroenterology — Practice Intelligence</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:#f8f9fb;color:#111827;-webkit-font-smoothing:antialiased}
+.topbar{background:#fff;border-bottom:1px solid #e5e7eb;padding:16px 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.logo{display:flex;align-items:center;gap:14px}
+.logo-icon{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#0f7b6c,#5b4fc4);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:700}
+.logo-text{font-size:16px;font-weight:700}
+.logo-sub{font-size:12px;color:#6b7280}
+.filters{display:flex;gap:10px;align-items:center}
+.pill{font-size:12px;color:#6b7280;background:#f3f4f6;padding:5px 14px;border-radius:20px;font-weight:500}
+select{font-size:12px;font-weight:600;padding:6px 12px;border-radius:20px;border:1px solid #e5e7eb;background:#fff;color:#111827;cursor:pointer;min-width:180px}
+.tab-bar{display:flex;gap:0;padding:0 28px;background:#fff;border-bottom:1px solid #e5e7eb}
+.tab{padding:12px 20px;font-size:13px;font-weight:600;cursor:pointer;background:none;border:none;border-bottom:2px solid transparent;color:#6b7280;transition:all .15s}
+.tab:hover{color:#111827}
+.tab.active{color:#0f7b6c;border-bottom-color:#0f7b6c}
+.tab .badge{margin-left:6px;font-size:10px;background:#eeedfe;color:#5b4fc4;padding:2px 7px;border-radius:10px;font-weight:700}
+.content{padding:24px 28px;max-width:1100px}
+.section{display:none}
+.section.active{display:block}
+.mg{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.mg3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}
+.mc{background:#fff;border-radius:10px;padding:16px 18px;border:1px solid #e5e7eb}
+.mc-label{font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px;font-weight:600}
+.mc-val{font-size:24px;font-weight:700;line-height:1.2}
+.mc-sub{font-size:12px;margin-top:4px;font-weight:500}
+.up{color:#1a8a5c}.down{color:#dc3545}.neutral{color:#6b7280}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px}
+.card{background:#fff;border-radius:10px;border:1px solid #e5e7eb;padding:20px}
+.card-title{font-size:13px;font-weight:700;margin-bottom:16px}
+.chart-wrap{position:relative}
+.legend{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;margin-top:10px}
+.legend-sm{display:flex;flex-wrap:wrap;gap:4px 12px;justify-content:center;margin-top:6px}
+.legend span,.legend-sm span{font-size:11px;display:flex;align-items:center;gap:5px;color:#6b7280}
+.legend i,.legend-sm i{width:8px;height:8px;border-radius:2px;display:inline-block}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead tr{background:#f8f9fb}
+th{text-align:left;padding:10px 16px;color:#6b7280;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #e5e7eb}
+td{padding:11px 16px;border-bottom:1px solid #e5e7eb}
+.fw{font-weight:500}
+.badge-s{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px}
+.bg-good{background:#e1f5ee;color:#1a8a5c}
+.bg-warn{background:#fef3d6;color:#c68a17}
+.bg-bad{background:#fcebeb;color:#dc3545}
+.util-bar{display:flex;align-items:center;gap:8px}
+.util-track{flex:1;height:6px;background:#f3f4f6;border-radius:3px;overflow:hidden}
+.util-fill{height:100%;border-radius:3px}
+.util-pct{font-size:12px;font-weight:600;min-width:36px}
+.tbl-card{background:#fff;border-radius:10px;border:1px solid #e5e7eb;overflow:hidden}
+.tbl-head{padding:16px 20px;border-bottom:1px solid #e5e7eb;font-size:13px;font-weight:700}
+.insight-card{background:#fff;border-radius:10px;border:1px solid #e5e7eb;padding:18px 22px;display:flex;gap:16px;align-items:flex-start;margin-bottom:14px}
+.insight-icon{font-size:22px;line-height:1;margin-top:2px}
+.insight-body{flex:1}
+.insight-head{display:flex;align-items:center;margin-bottom:6px}
+.pri-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:8px;flex-shrink:0}
+.insight-title{font-size:14px;font-weight:700}
+.insight-pri{margin-left:10px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.insight-desc{font-size:13px;color:#6b7280;line-height:1.6}
+.ai-banner{margin-top:24px;background:#eeedfe;border-radius:10px;padding:20px 24px;border:1px solid #d4d0f0}
+.ai-banner h4{font-size:14px;font-weight:700;color:#5b4fc4;margin-bottom:6px}
+.ai-banner p{font-size:13px;color:#4a4580;line-height:1.7}
+.venue-indicator{font-size:13px;color:#0f7b6c;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:6px}
+.venue-dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.empty-state{background:#fff;border-radius:10px;border:1px solid #e5e7eb;padding:40px 20px;text-align:center}
+.empty-state p{font-size:14px;color:#6b7280}
+.empty-state .sub{font-size:13px;margin-top:8px}
+.note{font-size:12px;color:#6b7280;margin-bottom:16px;font-style:italic}
+@media(max-width:700px){.mg,.mg3{grid-template-columns:repeat(2,1fr)}.row{grid-template-columns:1fr}.filters{display:none}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-icon">CV</div>
+    <div><div class="logo-text">Citrus Valley Gastroenterology</div><div class="logo-sub">Practice intelligence dashboard</div></div>
+  </div>
+  <div class="filters">
+    <span class="pill">January 2026</span>
+    <select id="venue-select" onchange="onVenueChange()">
+      <option value="all">All Locations</option>
+      <optgroup label="Clinics">
+        <option value="covina">Covina Clinic</option>
+        <option value="glendora">Glendora Clinic</option>
+      </optgroup>
+      <optgroup label="Hospitals">
+        <option value="qov">Queen of the Valley</option>
+        <option value="intercomm">Intercommunity Hospital</option>
+        <option value="foothill">Foothill Presbyterian</option>
+        <option value="chino">Chino Valley Medical Ctr</option>
+      </optgroup>
+      <optgroup label="Surgical">
+        <option value="asc">Surgical Center (ASC)</option>
+      </optgroup>
+    </select>
+  </div>
+</div>
+
+<div class="tab-bar">
+  <button class="tab active" onclick="showTab('overview',this)">Overview</button>
+  <button class="tab" onclick="showTab('payers',this)">Payer analytics</button>
+  <button class="tab" onclick="showTab('scheduling',this)">Scheduling</button>
+  <button class="tab" onclick="showTab('ai',this)">AI insights <span class="badge">NEW</span></button>
+</div>
+
+<div class="content">
+  <div id="overview" class="section active"></div>
+  <div id="payers" class="section"></div>
+  <div id="scheduling" class="section"></div>
+  <div id="ai" class="section"></div>
+</div>
+
+<script>
+const P='#5b4fc4',T='#0f7b6c',CO='#d85a30',PK='#d4537e',AM='#c68a17',R='#dc3545',G='#1a8a5c',GR='#888780',BL='#3266ad';
+const grid='rgba(0,0,0,0.05)',txt='rgba(0,0,0,0.45)';
+const venueColors={covina:P,glendora:T,qov:BL,intercomm:G,foothill:CO,chino:AM,asc:PK};
+const venueLabels={all:"All Locations",covina:"Covina Clinic",glendora:"Glendora Clinic",qov:"Queen of the Valley",intercomm:"Intercommunity Hospital",foothill:"Foothill Presbyterian",chino:"Chino Valley Medical Ctr",asc:"Surgical Center (ASC)"};
+const procColorMap={"Colonoscopy":P,"Upper endoscopy (EGD)":T,"Double (Colonoscopy + EGD)":CO,"Office visit":GR,"Capsule endoscopy / ERCP":PK,"Other":AM,"Other (lab, consult)":BL};
+
+const procedures=[
+  {v:"asc",t:"Colonoscopy",c:142,b:98},{v:"asc",t:"Upper endoscopy (EGD)",c:76,b:42},{v:"asc",t:"Double (Colonoscopy + EGD)",c:52,b:38},{v:"asc",t:"Capsule endoscopy / ERCP",c:4,b:4},{v:"asc",t:"Other",c:8,b:3},
+  {v:"covina",t:"Office visit",c:180,b:45},{v:"covina",t:"Other (lab, consult)",c:52,b:25},
+  {v:"glendora",t:"Office visit",c:145,b:36},{v:"glendora",t:"Other (lab, consult)",c:38,b:17},
+  {v:"qov",t:"Colonoscopy",c:12,b:11},{v:"qov",t:"Upper endoscopy (EGD)",c:8,b:7},{v:"qov",t:"Capsule endoscopy / ERCP",c:6,b:10},{v:"qov",t:"Double (Colonoscopy + EGD)",c:4,b:5},{v:"qov",t:"Other",c:3,b:2},
+  {v:"intercomm",t:"Colonoscopy",c:10,b:9},{v:"intercomm",t:"Upper endoscopy (EGD)",c:7,b:6},{v:"intercomm",t:"Capsule endoscopy / ERCP",c:4,b:7},{v:"intercomm",t:"Double (Colonoscopy + EGD)",c:3,b:4},{v:"intercomm",t:"Other",c:2,b:2},
+  {v:"foothill",t:"Colonoscopy",c:8,b:7},{v:"foothill",t:"Upper endoscopy (EGD)",c:5,b:4},{v:"foothill",t:"Capsule endoscopy / ERCP",c:3,b:5},{v:"foothill",t:"Double (Colonoscopy + EGD)",c:2,b:3},{v:"foothill",t:"Other",c:2,b:3},
+  {v:"chino",t:"Colonoscopy",c:6,b:5},{v:"chino",t:"Upper endoscopy (EGD)",c:4,b:3},{v:"chino",t:"Capsule endoscopy / ERCP",c:2,b:4},{v:"chino",t:"Double (Colonoscopy + EGD)",c:2,b:3},{v:"chino",t:"Other",c:1,b:2}
+];
+
+const provData=[
+  {n:"Dr. A. Sharma",bk:{covina:18,asc:42,qov:14,intercomm:11},pc:{covina:48,asc:62,qov:13,intercomm:10}},
+  {n:"Dr. S. Arora",bk:{covina:16,asc:38,qov:12},pc:{covina:44,asc:55,qov:10}},
+  {n:"Dr. P. Truong",bk:{glendora:22,asc:40,foothill:11},pc:{glendora:58,asc:58,foothill:9}},
+  {n:"Dr. S. Saghir",bk:{glendora:16,asc:36,foothill:8,chino:9},pc:{glendora:42,asc:52,foothill:6,chino:8}},
+  {n:"Dr. O. Sidhom",bk:{glendora:15,asc:29,chino:8,intercomm:6},pc:{glendora:39,asc:55,chino:7,intercomm:5}}
+];
+
+const schedRaw=[
+  {n:"Dr. A. Sharma",v:"covina",pts:16,ut:84,ns:7.2,np:31},{n:"Dr. S. Arora",v:"covina",pts:14,ut:79,ns:8.8,np:28},
+  {n:"Dr. P. Truong",v:"glendora",pts:15,ut:82,ns:6.9,np:33},{n:"Dr. S. Saghir",v:"glendora",pts:12,ut:71,ns:11.4,np:25},{n:"Dr. O. Sidhom",v:"glendora",pts:11,ut:68,ns:14.2,np:22},
+  {n:"Dr. A. Sharma",v:"asc",pts:8,ut:88,ns:3.1,np:0},{n:"Dr. S. Arora",v:"asc",pts:7,ut:85,ns:3.5,np:0},
+  {n:"Dr. P. Truong",v:"asc",pts:8,ut:90,ns:2.8,np:0},{n:"Dr. S. Saghir",v:"asc",pts:7,ut:82,ns:4.2,np:0},{n:"Dr. O. Sidhom",v:"asc",pts:6,ut:78,ns:4.8,np:0}
+];
+
+const payerData=[
+  {p:"Anthem Blue Cross",b:68,pct:16.5,d:24,dn:3.5,s:"good"},{p:"Blue Shield of CA",b:53,pct:13.0,d:22,dn:3.2,s:"good"},
+  {p:"Medicare (Traditional)",b:49,pct:12.0,d:31,dn:5.1,s:"good"},{p:"Aetna",b:39,pct:9.5,d:18,dn:2.9,s:"good"},
+  {p:"United Healthcare",b:35,pct:8.5,d:34,dn:6.3,s:"warn"},{p:"Cigna",b:29,pct:7.0,d:29,dn:4.5,s:"good"},
+  {p:"Health Net",b:25,pct:6.0,d:42,dn:7.8,s:"warn"},{p:"SCAN Health Plan",b:18,pct:4.5,d:28,dn:4.1,s:"good"},
+  {p:"Humana",b:16,pct:4.0,d:26,dn:3.9,s:"good"},{p:"LA Care Health Plan",b:14,pct:3.5,d:48,dn:8.6,s:"warn"},
+  {p:"Inland Empire Health Plan",b:12,pct:3.0,d:55,dn:9.8,s:"bad"},{p:"Medi-Medi (Dual Eligible)",b:10,pct:2.5,d:61,dn:10.5,s:"bad"},
+  {p:"Molina Healthcare",b:8,pct:2.0,d:51,dn:11.2,s:"bad"},{p:"Tricare",b:6,pct:1.5,d:20,dn:2.1,s:"good"},
+  {p:"Alignment Healthcare",b:5,pct:1.1,d:33,dn:5.4,s:"good"},{p:"Medi-Cal (FFS)",b:4,pct:1.0,d:67,dn:9.4,s:"bad"},
+  {p:"Self-pay / Other",b:19,pct:4.6,d:null,dn:null,s:"good"}
+];
+
+const aiInsights=[
+  {ic:"💰",ti:"Billables recovery opportunity",bd:"327 patients are overdue for follow-up colonoscopy (3+ years since last procedure). Scheduling these at the ASC represents an estimated $245K in billables at current reimbursement rates.",pr:"high"},
+  {ic:"⚠️",ti:"Molina denial spike",bd:"Molina denial rate increased from 8.1% to 11.2% over the past 90 days. Top denial reason: missing prior authorization (CPT 45385). Recommend pre-auth workflow audit.",pr:"high"},
+  {ic:"📊",ti:"Managed care A/R drag",bd:"IEHP, LA Care, Medi-Medi, and Molina collectively account for 11% of billables but 41% of outstanding A/R over 90 days. Average days-to-pay is 54 vs. 26 for commercial payers.",pr:"high"},
+  {ic:"🏥",ti:"ASC utilization upside",bd:"ASC is running at 85% utilization but Fridays drop to 72%. Moving 6 procedures/week from hospital settings to ASC would increase ASC margin by ~$18K/month due to lower facility overhead.",pr:"medium"},
+  {ic:"📉",ti:"Clinic no-show pattern",bd:"Monday 8am clinic slots have a 22% no-show rate vs. 7% average. Patients age 18–35 account for 74% of no-shows. SMS reminder 2hrs before could reduce this.",pr:"medium"},
+  {ic:"🔬",ti:"ADR benchmark alert",bd:"Practice-wide adenoma detection rate is 28.4%, just above the 25% minimum. Two providers are below threshold — targeted quality review recommended.",pr:"medium"}
+];
+
+let charts={};
+let currentVenue='all';
+
+function getVenueIds(v){return v==='all'?['covina','glendora','qov','intercomm','foothill','chino','asc']:[v];}
+
+function showTab(id,btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+  renderTab(id);
+}
+
+function onVenueChange(){
+  currentVenue=document.getElementById('venue-select').value;
+  const activeTab=document.querySelector('.tab.active');
+  const tabId=activeTab?['overview','payers','scheduling','ai'].find(id=>activeTab.textContent.toLowerCase().includes(id.slice(0,4)))||'overview':'overview';
+  renderTab(tabId);
+}
+
+function destroyCharts(){Object.values(charts).forEach(c=>{try{c.destroy()}catch(e){}});charts={};}
+
+function statusBadge(s){const m={good:['bg-good','On track'],warn:['bg-warn','Watch'],bad:['bg-bad','Action needed']};const[c,l]=m[s];return `<span class="badge-s ${c}">${l}</span>`;}
+function utilBar(v){const c=v>=80?G:v>=70?AM:R;return `<div class="util-bar"><div class="util-track"><div class="util-fill" style="width:${v}%;background:${c}"></div></div><span class="util-pct" style="color:${c}">${v}%</span></div>`;}
+
+function renderTab(tabId){
+  destroyCharts();
+  const ids=getVenueIds(currentVenue);
+  const fp=procedures.filter(p=>ids.includes(p.v)&&p.c>0);
+  const totalB=fp.reduce((s,p)=>s+p.b,0);
+  const totalC=fp.reduce((s,p)=>s+p.c,0);
+  const vl=venueLabels[currentVenue];
+  const isAll=currentVenue==='all';
+  const indicator=!isAll?`<div class="venue-indicator"><span class="venue-dot" style="background:${venueColors[currentVenue]}"></span> Showing: ${vl}</div>`:'';
+
+  if(tabId==='overview'){
+    const procMix={};fp.forEach(p=>{procMix[p.t]=(procMix[p.t]||0)+p.c;});
+    const pmArr=Object.entries(procMix).map(([n,v])=>({n,v})).sort((a,b)=>b.v-a.v);
+    const provB=provData.map(p=>{const b=ids.reduce((s,v)=>s+(p.bk[v]||0),0);const pc=ids.reduce((s,v)=>s+(p.pc[v]||0),0);return{n:p.n,b,pc};}).filter(p=>p.b>0).sort((a,b)=>b.b-a.b);
+
+    let venueBreakdownHtml='';
+    if(isAll){
+      const groups={Clinics:['covina','glendora'],Hospitals:['qov','intercomm','foothill','chino'],"Surgical Center":['asc']};
+      const vt=Object.entries(groups).map(([l,vs])=>{const ps=procedures.filter(p=>vs.includes(p.v));return{n:l,b:ps.reduce((s,p)=>s+p.b,0)};});
+      const allVenues=['covina','glendora','qov','intercomm','foothill','chino','asc'].map(id=>{const ps=procedures.filter(p=>p.v===id);return{id,l:venueLabels[id],b:ps.reduce((s,p)=>s+p.b,0)};}).sort((a,b)=>b.b-a.b);
+      venueBreakdownHtml=`<div class="row">
+        <div class="card"><div class="card-title">Billables by venue type ($K)</div><div class="chart-wrap" style="height:160px"><canvas id="c-vtype"></canvas></div></div>
+        <div class="card"><div class="card-title">Billables by individual venue ($K)</div><div class="chart-wrap" style="height:260px"><canvas id="c-vindiv"></canvas></div></div>
+      </div>`;
+      setTimeout(()=>{
+        charts.vtype=new Chart(document.getElementById('c-vtype'),{type:'bar',data:{labels:vt.map(v=>v.n),datasets:[{data:vt.map(v=>v.b),backgroundColor:[PK,P,BL],borderRadius:3}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:grid},ticks:{color:txt,font:{size:11},callback:v=>'$'+v+'K'}},y:{grid:{display:false},ticks:{color:'#111827',font:{size:12}}}}}});
+        charts.vindiv=new Chart(document.getElementById('c-vindiv'),{type:'bar',data:{labels:allVenues.map(v=>v.l),datasets:[{data:allVenues.map(v=>v.b),backgroundColor:allVenues.map(v=>venueColors[v.id]||GR),borderRadius:3}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:grid},ticks:{color:txt,font:{size:11},callback:v=>'$'+v+'K'}},y:{grid:{display:false},ticks:{color:'#111827',font:{size:11}}}}}});
+      },50);
+    }
+
+    let provRows='';provB.forEach(p=>{const avg=p.pc>0?Math.round(p.b*1000/p.pc).toLocaleString():'—';provRows+=`<tr><td class="fw">${p.n}</td><td>$${p.b}K</td><td>${p.pc}</td><td>$${avg}</td></tr>`;});
+
+    document.getElementById('overview').innerHTML=`
+      ${indicator}
+      <div class="mg">
+        <div class="mc"><div class="mc-label">Billables paid</div><div class="mc-val">$${totalB}K</div></div>
+        <div class="mc"><div class="mc-label">Procedures</div><div class="mc-val">${totalC.toLocaleString()}</div></div>
+        <div class="mc"><div class="mc-label">Collection rate</div><div class="mc-val">91.3%</div></div>
+        <div class="mc"><div class="mc-label">Avg days to payment</div><div class="mc-val">38 days</div></div>
+      </div>
+      ${venueBreakdownHtml}
+      <div class="row">
+        <div class="card"><div class="card-title">Billables by provider ($K)</div><div class="chart-wrap" style="height:220px"><canvas id="c-prov"></canvas></div></div>
+        <div class="card"><div class="card-title">Procedure mix</div><div class="chart-wrap" style="height:200px"><canvas id="c-proc"></canvas></div>
+          <div class="legend-sm">${pmArr.map(p=>`<span><i style="background:${procColorMap[p.n]||'#ccc'}"></i>${p.n} (${Math.round(p.v/totalC*100)}%)</span>`).join('')}</div>
+        </div>
+      </div>
+      <div class="tbl-card"><div class="tbl-head">Provider detail — ${vl}</div><table><thead><tr style="background:#f8f9fb"><th>Provider</th><th>Billables paid</th><th>Procedures</th><th>Avg $/procedure</th></tr></thead><tbody>${provRows}</tbody></table></div>
+    `;
+    setTimeout(()=>{
+      charts.prov=new Chart(document.getElementById('c-prov'),{type:'bar',data:{labels:provB.map(p=>p.n),datasets:[{data:provB.map(p=>p.b),backgroundColor:P,borderRadius:3}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:grid},ticks:{color:txt,font:{size:11},callback:v=>'$'+v+'K'}},y:{grid:{display:false},ticks:{color:'#111827',font:{size:12}}}}}});
+      charts.proc=new Chart(document.getElementById('c-proc'),{type:'doughnut',data:{labels:pmArr.map(p=>p.n),datasets:[{data:pmArr.map(p=>p.v),backgroundColor:pmArr.map(p=>procColorMap[p.n]||'#ccc'),borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{display:false}}}});
+    },50);
+  }
+
+  if(tabId==='payers'){
+    let rows='';payerData.forEach(p=>{
+      const dc=p.d>45?'color:#dc3545;font-weight:600':p.d>30?'color:#c68a17':'';
+      const dnc=p.dn>9?'color:#dc3545;font-weight:600':p.dn>6?'color:#c68a17':'';
+      rows+=`<tr><td class="fw" style="white-space:nowrap">${p.p}</td><td>$${p.b}K</td><td>${p.pct}%</td><td style="${dc}">${p.d??'—'}</td><td style="${dnc}">${p.dn!=null?p.dn+'%':'—'}</td><td>${statusBadge(p.s)}</td></tr>`;
+    });
+    document.getElementById('payers').innerHTML=`
+      <div class="note">Payer analytics are shown practice-wide across all locations</div>
+      <div class="mg">
+        <div class="mc"><div class="mc-label">Active payers</div><div class="mc-val">17</div></div>
+        <div class="mc"><div class="mc-label">Fastest payer</div><div class="mc-val">Aetna</div><div class="mc-sub neutral">18 days avg</div></div>
+        <div class="mc"><div class="mc-label">Slowest payer</div><div class="mc-val">Medi-Cal</div><div class="mc-sub neutral">67 days avg</div></div>
+        <div class="mc"><div class="mc-label">Highest denials</div><div class="mc-val">Molina</div><div class="mc-sub neutral">11.2% denial rate</div></div>
+      </div>
+      <div class="card" style="margin-bottom:24px"><div class="card-title">Billables paid by payer — January 2026 ($K)</div><div class="chart-wrap" style="height:540px"><canvas id="c-payer"></canvas></div>
+        <div class="legend"><span><i style="background:${P}"></i>On track</span><span><i style="background:${AM}"></i>Watch</span><span><i style="background:${R}"></i>Action needed</span></div>
+      </div>
+      <div class="tbl-card"><div class="tbl-head">Payer performance detail</div><div style="overflow-x:auto"><table style="min-width:700px"><thead><tr style="background:#f8f9fb"><th>Payer</th><th>Billables paid</th><th>% of total</th><th>Avg days to pay</th><th>Denial rate</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></div></div>
+    `;
+    setTimeout(()=>{
+      charts.payer=new Chart(document.getElementById('c-payer'),{type:'bar',data:{labels:payerData.map(p=>p.p.length>20?p.p.slice(0,20)+'…':p.p),datasets:[{data:payerData.map(p=>p.b),backgroundColor:payerData.map(p=>p.s==='bad'?R:p.s==='warn'?AM:P),borderRadius:3}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:grid},ticks:{color:txt,font:{size:11},callback:v=>'$'+v+'K'}},y:{grid:{display:false},ticks:{color:'#111827',font:{size:11}}}}}});
+    },50);
+  }
+
+  if(tabId==='scheduling'){
+    const canShow=isAll||['covina','glendora','asc'].includes(currentVenue);
+    if(!canShow){
+      document.getElementById('scheduling').innerHTML=`${indicator}<div class="empty-state"><p>Scheduling data for hospital venues is managed through hospital systems.</p><p class="sub">Select a clinic or the ASC to view scheduling metrics, or select "All Locations" for a practice-wide view.</p></div>`;
+      return;
+    }
+    const sd=isAll?schedRaw:schedRaw.filter(s=>s.v===currentVenue);
+    const totalAppts=sd.reduce((s,p)=>s+p.pts*22,0);
+    const avgNs=(sd.reduce((s,p)=>s+p.ns,0)/sd.length).toFixed(1);
+    const avgPts=sd.reduce((s,p)=>s+p.pts,0);
+    const avgUt=Math.round(sd.reduce((s,p)=>s+p.ut,0)/sd.length);
+    let rows='';sd.forEach(p=>{
+      const nc=p.ns>10?R:p.ns>8?AM:G;
+      rows+=`<tr><td class="fw">${p.n}</td><td><span style="display:flex;align-items:center;gap:6px"><span class="venue-dot" style="background:${venueColors[p.v]}"></span>${venueLabels[p.v]}</span></td><td>${p.pts}</td><td>${utilBar(p.ut)}</td><td style="color:${nc};font-weight:600">${p.ns}%</td><td>${p.np>0?p.np+'%':'N/A'}</td></tr>`;
+    });
+    document.getElementById('scheduling').innerHTML=`
+      ${indicator}
+      <div class="mg">
+        <div class="mc"><div class="mc-label">Total appointments</div><div class="mc-val">${totalAppts.toLocaleString()}</div></div>
+        <div class="mc"><div class="mc-label">Avg no-show rate</div><div class="mc-val">${avgNs}%</div></div>
+        <div class="mc"><div class="mc-label">Avg daily patients</div><div class="mc-val">${avgPts}</div></div>
+        <div class="mc"><div class="mc-label">Avg slot utilization</div><div class="mc-val">${avgUt}%</div></div>
+      </div>
+      <div class="tbl-card"><div class="tbl-head">Scheduling efficiency — ${vl}</div><table><thead><tr style="background:#f8f9fb"><th>Provider</th><th>Venue</th><th>Avg pts/day</th><th>Slot utilization</th><th>No-show rate</th><th>New patient %</th></tr></thead><tbody>${rows}</tbody></table></div>
+    `;
+  }
+
+  if(tabId==='ai'){
+    const priColor={high:R,medium:AM,low:G};
+    let cards='';aiInsights.forEach(ins=>{
+      cards+=`<div class="insight-card"><div class="insight-icon">${ins.ic}</div><div class="insight-body"><div class="insight-head"><span class="pri-dot" style="background:${priColor[ins.pr]}"></span><span class="insight-title">${ins.ti}</span><span class="insight-pri" style="color:${priColor[ins.pr]}">${ins.pr}</span></div><div class="insight-desc">${ins.bd}</div></div></div>`;
+    });
+    document.getElementById('ai').innerHTML=`
+      <div class="mg3">
+        <div class="mc"><div class="mc-label">Actionable insights</div><div class="mc-val">6</div><div class="mc-sub neutral">3 high priority</div></div>
+        <div class="mc"><div class="mc-label">Est. billables at risk</div><div class="mc-val">$245K</div><div class="mc-sub neutral">From overdue follow-ups</div></div>
+        <div class="mc"><div class="mc-label">Optimization score</div><div class="mc-val">68/100</div><div class="mc-sub neutral">Room for improvement</div></div>
+      </div>
+      ${cards}
+      <div class="ai-banner"><h4>What AI can do for your practice</h4><p>These insights are generated by analyzing your EHR, billing, and scheduling data with AI across all venues — clinics, hospitals, and the ASC. The system continuously monitors for billables recovery opportunities, operational inefficiencies, payer issues, and clinical quality gaps.</p></div>
+    `;
+  }
+}
+
+renderTab('overview');
+</script>
+</body>
+</html>
